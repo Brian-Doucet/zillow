@@ -1,7 +1,3 @@
-import json
-import requests
-from bs4 import BeautifulSoup
-
 ZILLOW_URL = 'https://www.zillow.com/thompsons-station-tn/sold/'
 ZILLOW_QUERY_PARAMS = {
     "searchQueryState": '{"pagination":{"currentPage":1},"usersSearchTerm":"Thompsons Station, TN","mapBounds":{"west":-87.1425982001953,"east":-86.66881279980467,"south":35.646757343441735,"north":35.99806935769734},"mapZoom":11,"regionSelection":[{"regionId":29482,"regionType":6}],"isMapVisible":false,"filterState":{"doz":{"value":"24m"},"pmf":{"value":false},"fore":{"value":false},"ah":{"value":true},"auc":{"value":false},"nc":{"value":false},"rs":{"value":true},"fsbo":{"value":false},"cmsn":{"value":false},"pf":{"value":false},"fsba":{"value":false},"sort":{"value":"globalrelevanceex"}},"isListVisible":true}'
