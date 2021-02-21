@@ -4,17 +4,26 @@
 
 import csv
 import json
+from typing import List
+
 from bs4 import BeautifulSoup
 import requests
+from models.zillow import ZillowResponse, ZillowRequest
 
-from utils import ZILLOW_URL, ZILLOW_QUERY_HEADERS, ZILLOW_QUERY_PARAMS
+from constants import ZILLOW_URL, ZILLOW_QUERY_HEADERS, ZILLOW_QUERY_PARAMS
 
 
 class ZillowScraper():
-    results = []
 
-    def fetch(self, url, params, headers):
-        response = requests.get(url, headers=headers, params=params)
+    def __init__(self):
+        self.results: List[ZillowResponse] = []
+        self.output_file = 'zillow_listings.csv'
+
+    def fetch(self, zillow_request: ZillowRequest):
+        response = requests.get(zillow_request.url,
+                                headers=zillow_request.headers,
+                                params=zillow_request.params)
+
         print(response)
         return response
 
@@ -28,32 +37,38 @@ class ZillowScraper():
             if property_data:
                 property_data_json = json.loads(property_data.contents[0])
 
-                # extract details for each listing
-                self.results.append({"full_address": property_data_json['name'],
-                                     "street_name": property_data_json['address']['streetAddress'],
-                                     "state": property_data_json['address']['addressRegion'],
-                                     "zip_code": property_data_json['address']['postalCode'],
-                                     "property_url": property_data_json['url'],
-                                     "square_footage": property_data_json['floorSize']['value'],
-                                     'sales_price': child_property.find('div', {'class': 'list-card-price'}).text})
+                zillow_response = ZillowResponse(
+                    full_address=property_data_json['name'],
+                    street_name=property_data_json['address']['streetAddress'],
+                    state=property_data_json['address']['addressRegion'],
+                    zip_code=property_data_json['address']['postalCode'],
+                    property_url=property_data_json['url'],
+                    square_footage=property_data_json['floorSize']['value'],
+                    sales_prices=child_property.find('div', {'class': 'list-card-price'}).text
+                )
 
-    def to_csv(self):
-        with open('zillow_listings.csv', 'w') as csv_file:
+                self.results.append(zillow_response)
+
+    def write_to_csv(self):
+        with open(self.output_file, 'w') as csv_file:
             writer = csv.DictWriter(
-                csv_file, fieldnames=self.results[0].keys())
+                csv_file, fieldnames=self.results[0].header_fields())
             writer.writeheader()
 
             for row in self.results:
-                writer.writerow(row)
+                writer.writerow(row.dict())
 
     def run(self):
-        url = ZILLOW_URL
-        params = ZILLOW_QUERY_PARAMS
-        headers = ZILLOW_QUERY_HEADERS
 
-        response = self.fetch(url=url, params=params, headers=headers)
+        request = ZillowRequest(
+            url=ZILLOW_URL,
+            params=ZILLOW_QUERY_PARAMS,
+            headers=ZILLOW_QUERY_HEADERS
+        )
+
+        response = self.fetch(request)
         self.parse(response.text)
-        self.to_csv()
+        self.write_to_csv()
 
 
 if __name__ == '__main__':
