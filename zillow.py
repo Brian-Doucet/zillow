@@ -55,8 +55,8 @@ class ZillowScraper():
             "script", {"type": "application/ld+json"})[1].string)
         print(json_text)
         zillow_data_object = ZillowData(
-            type=json_text['@type'],
-            name=json_text['name'],
+            property_type=json_text['@type'],
+            property_name=json_text['name'],
             number_of_rooms=json_text['numberOfRooms'],
             address=json_text['address'],
             property_url=json_text['url']
