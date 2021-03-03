@@ -6,27 +6,33 @@ from constants import ZILLOW_URL, ZILLOW_QUERY_PARAMS, ZILLOW_QUERY_HEADERS
 
 
 class ZillowData(BaseModel):
-    name: Optional[str]
-    type: Optional[str]
-    number_of_rooms: Optional[str]
-    address: Optional[Any] #remodel this to be of class Address
-    street_name: Optional[Any]
-    state: Optional[str]
-    zip_code: Optional[str]
-    property_url: Optional[str]
+    property_name: Optional[str]
+    property_type: Optional[str]
     square_footage: Optional[str]
-    sales_prices: Optional[str]
+    number_of_rooms: Optional[str]
+    year_built: Optional[str]
+    heating: Optional[str]
+    cooling: Optional[str]
+    parking: Optional[str]
+    lot_size: Optional[str]
+    price_per_sqft: Optional[str]
+    hoa_dues: Optional[str]
+    sale_price: Optional[str]
+    property_url: Optional[str]
+    zpid: Optional[str]
 
     def header_fields(self):
         return self.__fields__
 
 
 class Address(BaseModel):
-    """
-    TODO: capture all the fields based on the following data
-    'address': {'@type': 'PostalAddress', '@context': 'http://schema.org', 'streetAddress': '3903 Perkins Rd', 'addressLocality': 'Thompsons Station', 'addressRegion': 'TN', 'postalCode': '37179'}
-    """
-    pass
+    street_address: Optional[str]
+    city: Optional[str]
+    state: Optional[str]
+    zip_code: Optional[str]
+
+    def header_fields(self):
+        return self.__fields__
 
 
 class ZillowRequest(BaseModel):
