@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 # HTML output from an example property listing. Saves sending repeated requests
 # when testing these functions.
-sample_listing_html = open("zillow_sample.txt", "r").read()
+sample_listing_html = open("zillow_sample.txt", "r", encoding='utf-8').read()
 content = BeautifulSoup(sample_listing_html, "lxml")
 
 def get_zillow_property_id(url):
