@@ -6,10 +6,14 @@ from constants import ZILLOW_URL, ZILLOW_QUERY_PARAMS, ZILLOW_QUERY_HEADERS
 
 
 class ZillowData(BaseModel):
+    zpid: Optional[str]
     property_name: Optional[str]
     property_type: Optional[str]
     square_footage: Optional[str]
     number_of_rooms: Optional[str]
+    latitude: Optional[str]
+    longitude:Optional[str]
+    property_url: Optional[str]
     year_built: Optional[str]
     heating: Optional[str]
     cooling: Optional[str]
@@ -18,14 +22,12 @@ class ZillowData(BaseModel):
     price_per_sqft: Optional[str]
     hoa_dues: Optional[str]
     sale_price: Optional[str]
-    property_url: Optional[str]
-    zpid: Optional[str]
 
     def header_fields(self):
         return self.__fields__
 
 
-class Address(BaseModel):
+class ZillowAddress(BaseModel):
     street_address: Optional[str]
     city: Optional[str]
     state: Optional[str]
