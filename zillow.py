@@ -1,3 +1,4 @@
+#! python
 #!/usr/bin/python3
 
 """Program to fetch data on sold homes from Zillow"""
@@ -8,7 +9,8 @@ from typing import List
 
 from bs4 import BeautifulSoup
 import requests
-from models.zillow import ZillowData, ZillowRequest
+from models.zillow import ZillowAddress, ZillowData, ZillowRequest
+from utils import get_home_details, get_facts_and_features
 
 
 class ZillowScraper():
@@ -51,16 +53,37 @@ class ZillowScraper():
         zillow_request = ZillowRequest(url=url)
         response = self.fetch(zillow_request)
         content = BeautifulSoup(response.text, features='lxml')
-        json_text = json.loads(content.find_all(
-            "script", {"type": "application/ld+json"})[1].string)
-        print(json_text)
+        home_details = get_home_details(content)
+        facts_features = get_facts_and_features(content)
+        
+        #For testing purposes
+        print(home_details)
+        print(facts_features)
+
         zillow_data_object = ZillowData(
-            property_type=json_text['@type'],
-            property_name=json_text['name'],
-            number_of_rooms=json_text['numberOfRooms'],
-            address=json_text['address'],
-            property_url=json_text['url']
+            zpid=home_details.get("zpid"),
+            property_name=home_details.get("name"),
+            property_type=facts_features.get("Type"),
+            square_footage=home_details.get("floorSize").get("value"),
+            number_of_rooms=home_details.get("numberOfRooms"),
+            latitude=home_details.get("geo").get("latitude"),
+            longitude=home_details.get("geo").get("longitude"),
+            property_url=home_details.get("url"),
+            year_built=facts_features.get("Year built"),
+            heating=facts_features.get("Heating"),
+            cooling=facts_features.get("Cooling"),
+            parking=facts_features.get("Parking"),
+            lot_size=facts_features.get("Lot"),
+            price_per_sqft=facts_features.get("Price/sqft"),
+            hoa_dues=facts_features.get("HOA"),
         )
+        # Not sure how to incorporate this object
+        # zillow_address_object = ZillowAddress(
+        #     street_address=home_details.get("streetAddress"),
+        #     city=home_details.get("'addressLocality"),
+        #     state=home_details.get("addressRegion"),
+        #     zip_code=home_details.get("postalCode")
+        # )
 
         return zillow_data_object
 
