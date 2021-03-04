@@ -1,2 +1,2 @@
-property_name,property_type,number_of_rooms,address,street_name,state,zip_code,property_url,square_footage,sale_price
-"3903 Perkins Rd, Thompsons Station, TN 37179",SingleFamilyResidence,,"{'@type': 'PostalAddress', '@context': 'http://schema.org', 'streetAddress': '0 Perkins Rd', 'addressLocality': 'Thompsons Station', 'addressRegion': 'TN', 'postalCode': '37179'}",,,,/homedetails/0-Perkins-Rd-Thompsons-Station-TN-37179/2096839933_zpid/,,
+zpid,property_name,property_type,square_footage,number_of_rooms,latitude,longitude,property_url,year_built,heating,cooling,parking,lot_size,price_per_sqft,hoa_dues,sale_price
+62895950,"2686 New Port Royal Rd, Thompsons Station, TN 37179",SingleFamily,"2,398",3,35.784080505371094,-86.89679718017578,/homedetails/2686-New-Port-Royal-Rd-Thompsons-Station-TN-37179/62895950_zpid/,2003,Central,Central Air,Garage Faces Front,0.16 Acres,,$25 monthly,
