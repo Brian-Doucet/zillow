@@ -9,6 +9,7 @@ from typing import List
 
 from bs4 import BeautifulSoup
 import requests
+
 from models.zillow import ZillowAddress, ZillowData, ZillowRequest
 from utils import get_home_details, get_facts_and_features
 
@@ -49,25 +50,30 @@ class ZillowScraper():
         return list_of_urls
 
     def get_property_details(self, url: str) -> ZillowData:
-
         zillow_request = ZillowRequest(url=url)
         response = self.fetch(zillow_request)
         content = BeautifulSoup(response.text, features='lxml')
         home_details = get_home_details(content)
         facts_features = get_facts_and_features(content)
-        
-        #For testing purposes
-        print(home_details)
-        print(facts_features)
+
+        zillow_address = ZillowAddress(
+            street_address=home_details.get("address").get("streetAddress"),
+            city=home_details.get("address").get("addressLocality"),
+            state=home_details.get("address").get("addressRegion"),
+            zip_code=home_details.get("address").get("postalCode"),
+            latitude=home_details.get("geo").get("latitude"),
+            longitude=home_details.get("geo").get("longitude")
+            )
 
         zillow_data_object = ZillowData(
             zpid=home_details.get("zpid"),
+            address=zillow_address,
             property_name=home_details.get("name"),
             property_type=facts_features.get("Type"),
             square_footage=home_details.get("floorSize").get("value"),
             number_of_rooms=home_details.get("numberOfRooms"),
-            latitude=home_details.get("geo").get("latitude"),
-            longitude=home_details.get("geo").get("longitude"),
+            bedrooms=get_beds_baths(content).get("bedrooms"),
+            bathrooms=get_beds_baths(content).get("bathrooms"),
             property_url=home_details.get("url"),
             year_built=facts_features.get("Year built"),
             heating=facts_features.get("Heating"),
@@ -75,15 +81,9 @@ class ZillowScraper():
             parking=facts_features.get("Parking"),
             lot_size=facts_features.get("Lot"),
             price_per_sqft=facts_features.get("Price/sqft"),
-            hoa_dues=facts_features.get("HOA"),
+            hoa_dues=facts_features.get("HOA")
+
         )
-        # Not sure how to incorporate this object
-        # zillow_address_object = ZillowAddress(
-        #     street_address=home_details.get("streetAddress"),
-        #     city=home_details.get("'addressLocality"),
-        #     state=home_details.get("addressRegion"),
-        #     zip_code=home_details.get("postalCode")
-        # )
 
         return zillow_data_object
 
@@ -128,9 +128,7 @@ class ZillowScraper():
                 writer.writerow(row.dict())
 
     def run(self):
-
         request = ZillowRequest()
-
         response = self.fetch(request)
         urls = self.get_zillow_urls_per_property(response.text)
         self.results.append(self.get_property_details(urls[0]))
