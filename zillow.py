@@ -67,23 +67,34 @@ class ZillowScraper():
 
         zillow_data_object = ZillowData(
             zpid=home_details.get("zpid"),
-            address=zillow_address,
             property_name=home_details.get("name"),
-            property_type=facts_features.get("Type"),
+            address=zillow_address,
+            property_type=facts_features.get("home_type"),
+            lot_size=facts_features.get("lot_size"),
+            year_built=facts_features.get("year_built"),
             square_footage=home_details.get("floorSize").get("value"),
-            number_of_rooms=home_details.get("numberOfRooms"),
-            bedrooms=get_beds_baths(content).get("bedrooms"),
-            bathrooms=get_beds_baths(content).get("bathrooms"),
-            property_url=home_details.get("url"),
-            year_built=facts_features.get("Year built"),
-            heating=facts_features.get("Heating"),
-            cooling=facts_features.get("Cooling"),
-            parking=facts_features.get("Parking"),
-            lot_size=facts_features.get("Lot"),
-            price_per_sqft=facts_features.get("Price/sqft"),
-            hoa_dues=facts_features.get("HOA")
-
-        )
+            total_interior_livable_area=facts_features.get("total_interior_livable_area"),
+            price_per_sqft=facts_features.get("price/sqft"),
+            stories=facts_features.get("stories"),
+            foundation=facts_features.get("foundation"),
+            roof=facts_features.get("roof"),
+            new_construction=facts_features.get("new_construction"),
+            bedrooms=facts_features.get("bedrooms"),
+            bathrooms=facts_features.get("bathrooms"),
+            full_bathrooms=facts_features.get("full_bathrooms"),
+            flooring=facts_features.get("flooring"),
+            basement=facts_features.get("basement"),
+            fireplace=facts_features.get("fireplace"),
+            parking=facts_features.get("parking"),
+            garage=facts_features.get("has_garage"),
+            garage_spaces=facts_features.get("garage_spaces"),
+            heating=facts_features.get("heating"),
+            cooling=facts_features.get("cooling"),
+            hoa_dues=facts_features.get("hoa"),
+            tax_assessed_value=facts_features.get("tax_assessed_value"),
+            annual_tax_amount=facts_features.get("annual_tax_amount"),
+            property_url=home_details.get("url")
+            )
 
         return zillow_data_object
 

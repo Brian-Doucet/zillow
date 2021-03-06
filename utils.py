@@ -98,3 +98,6 @@ def get_facts_and_features(content):
     item_values = [parse_text(item, ':', -1) for item in items_list]
 
     return dict(zip(item_keys, item_values))
+
+
+print(get_facts_and_features(content))
