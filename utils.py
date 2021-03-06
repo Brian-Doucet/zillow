@@ -11,6 +11,21 @@ from bs4 import BeautifulSoup
 sample_listing_html = open("zillow_sample.txt", "r", encoding='utf-8').read()
 content = BeautifulSoup(sample_listing_html, "lxml")
 
+def parse_text(text, delimiter, position):
+    """Return part of a string split on a specific delimiter
+
+    Args:
+        text (str): The text being parsed
+        delimiter (str): Delimiter to split on
+        position (int): The index for the slice of the string to return
+
+    Returns:
+        str: A portion of a text string
+    """
+    new_text = text.split(delimiter)[position]
+
+    return new_text
+
 def get_zillow_property_id(url):
     """Get the unique identifier for each property listing on Zillow.
 
@@ -53,19 +68,19 @@ def get_home_details(content):
     property_details_json = json.loads(property_details)
     zillow_property_id = get_zillow_property_id(property_details_json.get("url"))
     property_details_json["zpid"] = zillow_property_id
-    
+
     return property_details_json
 
 def get_facts_and_features(content):
     """Get data from the facts and features section of the property listing.
-    Not all listings will include these features.
+    Not all property listings will include each feature.
 
     Args:
         content (str): HTML from the home details page of a property listing
 
     Returns:
         Dict: A dictionary of property features
-    
+
     Data values include:
     =============   ==========================================================
     Type          Property type category (e.g. Townhouse, MultiFamily).
@@ -77,20 +92,9 @@ def get_facts_and_features(content):
     Parking       Type of parking available (e.g. Garage Faces Front)
     HOA           Homeowner's association dues, if any.
     """
-    facts_features = [feature.get_text() 
-                      for feature in content.find('ul', {'class': 'ds-home-fact-list'})
-                     ]
-    k = [f.split(":")[0] for f in facts_features]
-    val = [f.split(":")[1] for f in facts_features]
-    features_dict = dict(zip(k, val))
-    
-    return features_dict
+    facts_features = content.find("div", {"class": "ds-home-facts-and-features reso-facts-features sheety-facts-features"})
+    items_list = [li.get_text(strip=True) for uls in facts_features.find_all("ul") for li in uls]
+    item_keys = ['_'.join(parse_text(item, ':', 0).split()).lower() for item in items_list]
+    item_values = [parse_text(item, ':', -1) for item in items_list]
 
-# Example to show the output
-details = get_home_details(content)
-features = get_facts_and_features(content)
-zpid = get_zillow_property_id(details.get("url"))
-
-print(details, "\n")
-print(features, "\n")
-print(zpid, "\n")
+    return dict(zip(item_keys, item_values))
