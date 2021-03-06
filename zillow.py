@@ -142,7 +142,7 @@ class ZillowScraper():
         request = ZillowRequest()
         response = self.fetch(request)
         urls = self.get_zillow_urls_per_property(response.text)
-        self.results.append(self.get_property_details(urls[0]))
+        self.results.append(self.get_property_details(urls[9]))
         self.write_to_csv()
 
 

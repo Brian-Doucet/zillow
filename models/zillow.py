@@ -29,7 +29,7 @@ class ZillowData(BaseModel):
     stories: Optional[str]
     foundation: Optional[str]
     roof: Optional[str]
-    new_construction:[str]
+    new_construction:Optional[str]
     bedrooms:Optional[str]
     bathrooms:Optional[str]
     full_bathrooms: Optional[str]
