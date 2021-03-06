@@ -4,15 +4,26 @@ from pydantic import BaseModel
 
 from constants import ZILLOW_URL, ZILLOW_QUERY_PARAMS, ZILLOW_QUERY_HEADERS
 
+class ZillowAddress(BaseModel):
+    street_address: Optional[str]
+    city: Optional[str]
+    state: Optional[str]
+    zip_code: Optional[str]
+    latitude: Optional[str]
+    longitude:Optional[str]
+
+    def header_fields(self):
+        return self.__fields__
 
 class ZillowData(BaseModel):
     zpid: Optional[str]
     property_name: Optional[str]
+    address:Optional[ZillowAddress]
     property_type: Optional[str]
     square_footage: Optional[str]
     number_of_rooms: Optional[str]
-    latitude: Optional[str]
-    longitude:Optional[str]
+    bedrooms:Optional[str]
+    bathrooms:Optional[str]
     property_url: Optional[str]
     year_built: Optional[str]
     heating: Optional[str]
@@ -27,14 +38,6 @@ class ZillowData(BaseModel):
         return self.__fields__
 
 
-class ZillowAddress(BaseModel):
-    street_address: Optional[str]
-    city: Optional[str]
-    state: Optional[str]
-    zip_code: Optional[str]
-
-    def header_fields(self):
-        return self.__fields__
 
 
 class ZillowRequest(BaseModel):
