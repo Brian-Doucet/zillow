@@ -6,6 +6,13 @@ import re
 
 from bs4 import BeautifulSoup
 
+from geopy.geocoders import Nominatim
+from models.geocoding import Geolocation
+from models.zillow import ZillowParams
+
+# Nominatim is 1 request per second
+app = Nominatim(user_agent="tutorial")
+
 # HTML output from an example property listing. Saves sending repeated requests
 # when testing these functions.
 sample_listing_html = open("zillow_sample.txt", "r", encoding='utf-8').read()
@@ -100,4 +107,16 @@ def get_facts_and_features(content):
     return dict(zip(item_keys, item_values))
 
 
-print(get_facts_and_features(content))
+def get_geolocation(location: str) -> Geolocation:
+    return Geolocation(**app.geocode(location).raw)
+
+
+def build_request_parameters(location: str) -> ZillowParams:
+    geolocation = get_geolocation(location)
+    zillowParams = ZillowParams(
+        # usersSearchTerm=geolocation.display_name,
+        mapBounds=geolocation.get_map_bounds()
+    )
+
+    return zillowParams
+
