@@ -132,9 +132,17 @@ def simple_test():
 
 
     response = scraper.fetch(request)
-    searchResults = response.json()["searchResults"]
+    search_results = response.json()["searchResults"]
 
-    print(len(searchResults))
+    print(search_results)
+
+    list_results = search_results["listResults"]
+
+    relaxes_results = search_results['relaxedResults']
+
+    for i in relaxes_results:
+        print(i)
+        break
 
 
 simple_test()
