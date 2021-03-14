@@ -56,19 +56,17 @@ class ZillowScraper():
         home_details = get_home_details(content)
         facts_features = get_facts_and_features(content)
 
-        zillow_address = ZillowAddress(
+        print(facts_features)
+
+        zillow_data_object = ZillowData(
+            zpid=home_details.get("zpid"),
+            property_name=home_details.get("name"),
             street_address=home_details.get("address").get("streetAddress"),
             city=home_details.get("address").get("addressLocality"),
             state=home_details.get("address").get("addressRegion"),
             zip_code=home_details.get("address").get("postalCode"),
             latitude=home_details.get("geo").get("latitude"),
-            longitude=home_details.get("geo").get("longitude")
-            )
-
-        zillow_data_object = ZillowData(
-            zpid=home_details.get("zpid"),
-            property_name=home_details.get("name"),
-            address=zillow_address,
+            longitude=home_details.get("geo").get("longitude"),
             property_type=facts_features.get("home_type"),
             lot_size=facts_features.get("lot_size"),
             year_built=facts_features.get("year_built"),
@@ -149,3 +147,5 @@ class ZillowScraper():
 if __name__ == '__main__':
     scraper = ZillowScraper()
     scraper.run()
+
+
