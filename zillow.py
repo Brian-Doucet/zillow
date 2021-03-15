@@ -42,6 +42,7 @@ class ZillowScraper():
 
             if property_data:
                 property_data_json = json.loads(property_data.contents[0])
+                print(property_data_json)
 
                 list_of_urls.append(
                     property_data_json['url']
@@ -127,7 +128,9 @@ class ZillowScraper():
         request = ZillowRequest()
         response = self.fetch(request)
         urls = self.get_zillow_urls_per_property(response.text)
-        self.results.append(self.get_property_details(urls[9]))
+
+        for property_url in urls:
+            self.results.append(self.get_property_details(property_url))
         self.write_to_csv()
 
 
