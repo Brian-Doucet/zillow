@@ -1,3 +1,4 @@
+#! python
 #!/usr/bin/python3
 
 """Program to fetch data on sold homes from Zillow"""
@@ -8,7 +9,9 @@ from typing import List
 
 from bs4 import BeautifulSoup
 import requests
-from models.zillow import ZillowData, ZillowRequest
+
+from models.zillow import ZillowAddress, ZillowData, ZillowRequest
+from utils import get_home_details, get_facts_and_features
 
 
 class ZillowScraper():
@@ -47,20 +50,47 @@ class ZillowScraper():
         return list_of_urls
 
     def get_property_details(self, url: str) -> ZillowData:
-
         zillow_request = ZillowRequest(url=url)
         response = self.fetch(zillow_request)
         content = BeautifulSoup(response.text, features='lxml')
-        json_text = json.loads(content.find_all(
-            "script", {"type": "application/ld+json"})[1].string)
-        print(json_text)
+        home_details = get_home_details(content)
+        facts_features = get_facts_and_features(content)
+
         zillow_data_object = ZillowData(
-            type=json_text['@type'],
-            name=json_text['name'],
-            number_of_rooms=json_text['numberOfRooms'],
-            address=json_text['address'],
-            property_url=json_text['url']
-        )
+            zpid=home_details.get("zpid"),
+            property_name=home_details.get("name"),
+            street_address=home_details.get("address").get("streetAddress"),
+            city=home_details.get("address").get("addressLocality"),
+            state=home_details.get("address").get("addressRegion"),
+            zip_code=home_details.get("address").get("postalCode"),
+            latitude=home_details.get("geo").get("latitude"),
+            longitude=home_details.get("geo").get("longitude"),
+            property_type=facts_features.get("home_type"),
+            lot_size=facts_features.get("lot_size"),
+            year_built=facts_features.get("year_built"),
+            square_footage=home_details.get("floorSize").get("value"),
+            total_interior_livable_area=facts_features.get("total_interior_livable_area"),
+            price_per_sqft=facts_features.get("price/sqft"),
+            stories=facts_features.get("stories"),
+            foundation=facts_features.get("foundation"),
+            roof=facts_features.get("roof"),
+            new_construction=facts_features.get("new_construction"),
+            bedrooms=facts_features.get("bedrooms"),
+            bathrooms=facts_features.get("bathrooms"),
+            full_bathrooms=facts_features.get("full_bathrooms"),
+            flooring=facts_features.get("flooring"),
+            basement=facts_features.get("basement"),
+            fireplace=facts_features.get("fireplace"),
+            parking=facts_features.get("parking"),
+            garage=facts_features.get("has_garage"),
+            garage_spaces=facts_features.get("garage_spaces"),
+            heating=facts_features.get("heating"),
+            cooling=facts_features.get("cooling"),
+            hoa_dues=facts_features.get("hoa"),
+            tax_assessed_value=facts_features.get("tax_assessed_value"),
+            annual_tax_amount=facts_features.get("annual_tax_amount"),
+            property_url=home_details.get("url")
+            )
 
         return zillow_data_object
 
@@ -83,17 +113,6 @@ class ZillowScraper():
 
                 break
 
-                # zillow_response = ZillowData(
-                #     full_address=property_data_json['name'],
-                #     street_name=property_data_json['address']['streetAddress'],
-                #     state=property_data_json['address']['addressRegion'],
-                #     zip_code=property_data_json['address']['postalCode'],
-                #     property_url=property_data_json['url'],
-                #     square_footage=property_data_json['floorSize']['value'],
-                #     sales_prices=child_property.find('div', {'class': 'list-card-price'}).text
-                # )
-                #
-                # self.results.append(zillow_response)
 
     def write_to_csv(self):
         with open(self.output_file, 'w') as csv_file:
@@ -105,15 +124,15 @@ class ZillowScraper():
                 writer.writerow(row.dict())
 
     def run(self):
-
         request = ZillowRequest()
-
         response = self.fetch(request)
         urls = self.get_zillow_urls_per_property(response.text)
-        self.results.append(self.get_property_details(urls[0]))
+        self.results.append(self.get_property_details(urls[9]))
         self.write_to_csv()
 
 
 if __name__ == '__main__':
     scraper = ZillowScraper()
     scraper.run()
+
+
