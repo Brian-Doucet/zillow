@@ -56,8 +56,6 @@ class ZillowScraper():
         home_details = get_home_details(content)
         facts_features = get_facts_and_features(content)
 
-        print(facts_features)
-
         zillow_data_object = ZillowData(
             zpid=home_details.get("zpid"),
             property_name=home_details.get("name"),
@@ -115,17 +113,6 @@ class ZillowScraper():
 
                 break
 
-                # zillow_response = ZillowData(
-                #     full_address=property_data_json['name'],
-                #     street_name=property_data_json['address']['streetAddress'],
-                #     state=property_data_json['address']['addressRegion'],
-                #     zip_code=property_data_json['address']['postalCode'],
-                #     property_url=property_data_json['url'],
-                #     square_footage=property_data_json['floorSize']['value'],
-                #     sales_prices=child_property.find('div', {'class': 'list-card-price'}).text
-                # )
-                #
-                # self.results.append(zillow_response)
 
     def write_to_csv(self):
         with open(self.output_file, 'w') as csv_file:
